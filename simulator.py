@@ -13,13 +13,33 @@ def handler(signum, frame):
 
 class Random_Player():
 	def __init__(self):
-		pass
+		self.graph = []
 
 	def move(self, board, old_move, flag):
 		#You have to implement the move function with the same signature as this
 		#Find the list of valid cells allowed
-		cells = board.find_valid_move_cells(old_move)
-		return cells[random.randrange(len(cells))]
+		x1 = 0 
+		y1 = 0
+		if old_move == (-1 , -1):
+			x1 = random.randint(0,15)
+			y1 = random.randint(0,15)
+		#cells = board.find_valid_move_cells(old_move)
+		elif board.block_status[old_move[0]][old_move[1]] !='-' :
+
+		
+		else :
+			createGraph(3 , board)
+		return (x1,y1)
+
+	def createGraph(self , depth , rootBoard):
+		size = int((int(math.pow(16 , depth+1))-1)/15)
+		self.graph[].append(rootBoard)
+		for i in xrange(size):
+			for j in xrange(16):
+				newBoard = Board()
+
+
+
 
 class Manual_Player:
 	def __init__(self):
