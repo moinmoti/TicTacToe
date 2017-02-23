@@ -28,15 +28,48 @@ class Random_Player():
 
 		
 		else :
-			createGraph(3 , board)
+			minmax(board, 5, True, -sys.maxint-1, sys.maxint, flag)
 		return (x1,y1)
 
-	def createGraph(self , depth , rootBoard):
-		size = int((int(math.pow(16 , depth+1))-1)/15)
-		self.graph[].append(rootBoard)
-		for i in xrange(size):
-			for j in xrange(16):
-				newBoard = Board()
+	def toggleFlag(flag):
+		if flag == 'x':
+			return 'o'
+		else:
+			return 'x'
+
+	def minmax(self, node, depth, isMax, alpha, beta, flag):
+		if depth == 0:
+			# return utility(node)
+
+		if isMax:
+			bestVal = -sys.maxint-1
+			for i in xrange(16):
+				if node[i/4][i%4] == '-':
+					node[i/4][i%4]=flag
+					flag = toggleFlag(flag)
+					value = minmax(node, depth-1, False, alpha, beta, flag)
+					node[i/4][i%4] = '-'
+					bestVal = max(bestVal, value)
+					alpha = max(alpha, bestVal)
+					if beta <= alpha:
+						break
+			return bestVal
+		else:
+			bestVal = sys.maxint 
+    	    for i in xrange(16):
+    	    	if node[i/4][i%4] == '-':
+    	    		node[i/4][i%4]=flag
+    	    		flag = toggleFlag(flag)
+	        	    value = minimax(node, depth-1, True, alpha, beta, flag)
+					node[i/4][i%4] = '-'
+	        	    bestVal = min( bestVal, value) 
+	        	    beta = min( beta, bestVal)
+	        	   	if beta <= alpha:
+	            	    break
+	        return bestVal
+
+
+				
 
 
 
