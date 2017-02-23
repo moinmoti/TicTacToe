@@ -15,10 +15,76 @@ class Random_Player():
 	def __init__(self):
 		self.graph = []
 
+	def utility(self, node, curr_move, flag):
+
+		curr_block = (curr_move[0]/4, curr_move[1]/4)
+		sum_max = -sys.maxint-1
+		sum_min = sys.maxint
+
+		for i in xrange(4):
+			sum_val = 0
+			x = 4*curr_block[0] + i
+			for j in xrange(4):
+				y = 4*curr_block[1] + j
+				if node[x][y] == flag:
+					sum_val += 1
+				elif node[x][y] != '-':
+					sum_val += -1
+			if sum_max < sum_val:
+				sum_max = sum_val
+			if sum_min > sum_val:
+				sum_min = sum_val
+
+		for j in xrange(4):
+			sum_val = 0
+			y = 4*curr_block[1] + j
+			for i in xrange(4):
+				x = 4*curr_block[0] + i
+				if node[x][y] == flag:
+					sum_val += 1
+				elif node[x][y] != '-':
+					sum_val += -1
+			if sum_max < sum_val:
+				sum_max = sum_val
+			if sum_min > sum_val:
+				sum_min = sum_val
+
+		sum_val = 0
+
+		for i in xrange(4):
+			x = 4*curr_block[0] + i
+			y = 4*curr_block[1] + j
+			if node[x][y] == flag:
+				sum_val += 1
+			elif node[x][y] != '-':
+				sum_val += -1
+		if sum_max < sum_val:
+			sum_max = sum_val
+		if sum_min > sum_val:
+			sum_min = sum_val
+
+		x = 4*curr_block[0]
+		y = 4*curr_block[1] + 3
+
+		for i in xrange(4):
+			if node[x+i][y-i] == flag:
+				sum_val += 1
+			elif node[x+i][y-i] != '-':
+				sum_val += -1
+		if sum_max < sum_val:
+			sum_max = sum_val
+		if sum_min > sum_val:
+			sum_min = sum_val
+
+		if abs(sum_max) < abs(sum_min):
+			return sum_min
+		else return sum_max
+
+
 	def move(self, board, old_move, flag):
 		#You have to implement the move function with the same signature as this
 		#Find the list of valid cells allowed
-		x1 = 0 
+		x1 = 0
 		y1 = 0
 		if old_move == (-1 , -1):
 			x1 = random.randint(0,15)
@@ -26,7 +92,7 @@ class Random_Player():
 		#cells = board.find_valid_move_cells(old_move)
 		elif board.block_status[old_move[0]][old_move[1]] !='-' :
 
-		
+
 		else :
 			minmax(board, 5, True, -sys.maxint-1, sys.maxint, flag)
 		return (x1,y1)
@@ -55,21 +121,21 @@ class Random_Player():
 						break
 			return bestVal
 		else:
-			bestVal = sys.maxint 
+			bestVal = sys.maxint
     	    for i in xrange(16):
     	    	if node[i/4][i%4] == '-':
     	    		node[i/4][i%4]=flag
     	    		flag = toggleFlag(flag)
 	        	    value = minimax(node, depth-1, True, alpha, beta, flag)
 					node[i/4][i%4] = '-'
-	        	    bestVal = min( bestVal, value) 
+	        	    bestVal = min( bestVal, value)
 	        	    beta = min( beta, bestVal)
 	        	   	if beta <= alpha:
 	            	    break
 	        return bestVal
 
 
-				
+
 
 
 
@@ -78,7 +144,7 @@ class Manual_Player:
 	def __init__(self):
 		pass
 	def move(self, board, old_move, flag):
-		print 'Enter your move: <format:row column> (you\'re playing with', flag + ")"	
+		print 'Enter your move: <format:row column> (you\'re playing with', flag + ")"
 		mvp = raw_input()
 		mvp = mvp.split()
 		return (int(mvp[0]), int(mvp[1]))
@@ -101,14 +167,14 @@ class Board:
 				if j%4 == 0:
 					print "",
 				print self.board_status[i][j],
-			print 
+			print
 		print
 
 		print '==============Block State=============='
 		for i in range(4):
 			for j in range(4):
 				print self.block_status[i][j],
-			print 
+			print
 		print '======================================='
 		print
 		print
@@ -130,7 +196,7 @@ class Board:
 				for j in range(16):
 					if self.board_status[i][j] == '-' and self.block_status[i/4][j/4] == '-':
 						allowed_cells.append((i,j))
-		return allowed_cells	
+		return allowed_cells
 
 	def find_terminal_state(self):
 		#checks if the game is over(won or drawn) and returns the player who have won the game or the player who has higher blocks in case of a draw
@@ -150,11 +216,11 @@ class Board:
 					cntd += 1
 
 		for i in range(4):
-			row = bs[i]							#i'th row 
+			row = bs[i]							#i'th row
 			col = [x[i] for x in bs]			#i'th column
 			#print row,col
 			#checking if i'th row or i'th column has been won or not
-			if (row[0] =='x' or row[0] == 'o') and (row.count(row[0]) == 4):	
+			if (row[0] =='x' or row[0] == 'o') and (row.count(row[0]) == 4):
 				return (row[0],'WON')
 			if (col[0] =='x' or col[0] == 'o') and (col.count(col[0]) == 4):
 				return (col[0],'WON')
@@ -172,7 +238,7 @@ class Board:
 	def check_valid_move(self, old_move, new_move):
 		#checks if a move is valid or not given the last move
 		if (len(old_move) != 2) or (len(new_move) != 2):
-			return False 
+			return False
 		if (type(old_move[0]) is not int) or (type(old_move[1]) is not int) or (type(new_move[0]) is not int) or (type(new_move[1]) is not int):
 			return False
 		if (old_move != (-1,-1)) and (old_move[0] < 0 or old_move[0] > 16 or old_move[1] < 0 or old_move[1] > 16):
@@ -237,7 +303,7 @@ def gameplay(obj1, obj2):				#game simulator
 		temp_block_status = copy.deepcopy(game_board.block_status)
 		signal.alarm(TIME)
 
-		try:									#try to get player 1's move			
+		try:									#try to get player 1's move
 			p1_move = obj1.move(game_board, old_move, fl1)
 		except TimedOutExc:					#timeout error
 #			print e
@@ -248,7 +314,7 @@ def gameplay(obj1, obj2):				#game simulator
 		except Exception as e:
 			WINNER = 'P2'
 			MESSAGE = 'INVALID MOVE'
-			pts2 = 16			
+			pts2 = 16
 			break
 		signal.alarm(0)
 
@@ -294,7 +360,7 @@ def gameplay(obj1, obj2):				#game simulator
 		except Exception as e:
 			WINNER = 'P1'
 			MESSAGE = 'INVALID MOVE'
-			pts1 = 16			
+			pts1 = 16
 			break
 		signal.alarm(0)
 		if (game_board.block_status != temp_block_status) or (game_board.board_status != temp_board_status):
@@ -315,7 +381,7 @@ def gameplay(obj1, obj2):				#game simulator
 			WINNER = 'P2'
 			MESSAGE = 'WON'
 			break
-		elif status[1] == 'DRAW':					
+		elif status[1] == 'DRAW':
 			WINNER = 'NONE'
 			MESSAGE = 'DRAW'
 			break
@@ -354,10 +420,10 @@ if __name__ == '__main__':
 		print '                2 => Human vs. Random Player'
 		print '                3 => Human vs. Human'
 		sys.exit(1)
- 
+
 	obj1 = ''
 	obj2 = ''
-	option = sys.argv[1]	
+	option = sys.argv[1]
 	if option == '1':
 		obj1 = Random_Player()
 		obj2 = Random_Player()
@@ -373,5 +439,5 @@ if __name__ == '__main__':
 		sys.exit(1)
 
 	x = gameplay(obj1, obj2)
-	print "Player 1 points:", x[0] 
+	print "Player 1 points:", x[0]
 	print "Player 2 points:", x[1]
