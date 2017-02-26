@@ -13,7 +13,7 @@ def handler(signum, frame):
 
 class Random_Player():
 	def __init__(self):
-		self.graph = []
+		pass
 
 	def utility(self, node, curr_move, flag):
 
@@ -78,7 +78,8 @@ class Random_Player():
 
 		if abs(sum_max) < abs(sum_min):
 			return sum_min
-		else return sum_max
+		else:
+			return sum_max
 
 
 	def move(self, board, old_move, flag):
@@ -91,10 +92,13 @@ class Random_Player():
 			y1 = random.randint(0,15)
 		#cells = board.find_valid_move_cells(old_move)
 		elif board.block_status[old_move[0]][old_move[1]] !='-' :
-
-
-		else :
-			minmax(board, 5, True, -sys.maxint-1, sys.maxint, flag)
+			x1 = random.randint(0,15)
+			y1 = random.randint(0,15)
+		else:
+			ans = minmax(board, 5, True, -sys.maxint+1, sys.maxint, flag)
+			x1 = ans[1];
+			y1 = ans[2];
+		print x1 , y1
 		return (x1,y1)
 
 	def toggleFlag(flag):
@@ -103,40 +107,52 @@ class Random_Player():
 		else:
 			return 'x'
 
-	def minmax(self, node, depth, isMax, alpha, beta, flag):
+	def minmax(self, node, depth, isMax, alpha, beta, flag , old_move):
 		if depth == 0:
-			# return utility(node)
+			val =  utility(node , old_move , flag)
+			return {val , old_move[0] , old_move[1]}
 
-		if isMax:
-			bestVal = -sys.maxint-1
+		elif isMax:
+			bestVal = -sys.maxint+1
+			ans[0]=bestVal;
+			ans[1]=old_move[0];
+			ans[2]=old_move[1];
 			for i in xrange(16):
-				if node[i/4][i%4] == '-':
-					node[i/4][i%4]=flag
+				if node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] == '-':
+					node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)]=flag
 					flag = toggleFlag(flag)
-					value = minmax(node, depth-1, False, alpha, beta, flag)
-					node[i/4][i%4] = '-'
-					bestVal = max(bestVal, value)
+					ans = minmax(node, depth-1, False, alpha, beta, flag , {4*old_move[0] +(i/4) , 4*old_move[1]+(i%4)} )
+
+					node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] = '-'
+					if ans[0] > bestVal:
+						bestVal = ans[0]
+						ans[1] = 4*old_move[0] +(i/4)
+						ans[2] = 4*old_move[1] +(i%4)
 					alpha = max(alpha, bestVal)
+					print ans[1] , ans[2]
 					if beta <= alpha:
 						break
-			return bestVal
-		else:
+			return ans
+		
+		else :
 			bestVal = sys.maxint
-    	    for i in xrange(16):
-    	    	if node[i/4][i%4] == '-':
-    	    		node[i/4][i%4]=flag
-    	    		flag = toggleFlag(flag)
-	        	    value = minimax(node, depth-1, True, alpha, beta, flag)
-					node[i/4][i%4] = '-'
-	        	    bestVal = min( bestVal, value)
-	        	    beta = min( beta, bestVal)
-	        	   	if beta <= alpha:
-	            	    break
-	        return bestVal
-
-
-
-
+			ans[0]=bestVal;
+			ans[1]=old_move[0];
+			ans[2]=old_move[1];
+			for i in xrange(16):
+    	    			if node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] == '-':
+    	    				node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)]=flag
+    	    				flag = toggleFlag(flag)
+	        	    		value = minimax(node, depth-1, True, alpha, beta, flag , {4*old_move[0] +(i/4) , 4*old_move[1]+(i%4)})
+					node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] = '-'
+					if ans[0] < bestVal :
+						bestVal = ans[0]
+						ans[1] = 4*old_move[0] +(i/4)
+						ans[2] = 4*old_move[1] +(i%4)
+					print ans[1] ,ans[2]
+					if beta <= alpha:
+		            			break
+	        	return ans
 
 
 
