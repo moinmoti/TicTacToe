@@ -105,7 +105,7 @@ class Random_Player():
 
 		elif isMax:
 			bestVal = -sys.maxint+1
-			if node.block_status[old_move[0]/4][old_move[1]/4] == '-':
+			if node.block_status[old_move[0]%4][old_move[1]%4] == '-':
 				for i in xrange(16):
 					if node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] == '-':
 						node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = flag
@@ -187,13 +187,13 @@ class Random_Player():
 			bestVal = -sys.maxint+1
 			if board.block_status[old_move[0]%4][old_move[1]%4] == '-':
 				for i in xrange(16):
-					if val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] > bestVal:
+					if val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] >= bestVal:
 						bestVal = val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)]
 						x1 = 4*(old_move[0]%4) +(i/4)
 						y1 = 4*(old_move[1]%4) +(i%4)
 			else :
 				for i in xrange(256):
-					if board.block_status[(i/16)/4][(i%16)/4]=='-' and val[(i/16)][(i%16)] > bestVal:
+					if board.block_status[(i/16)/4][(i%16)/4]=='-' and val[(i/16)][(i%16)] >= bestVal:
 						bestVal = val[(i/16)][(i%16)]
 						x1 = i/16
 						y1 = i%16
