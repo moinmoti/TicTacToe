@@ -11,6 +11,16 @@ def handler(signum, frame):
 	#print 'Signal handler called with signal', signum
 	raise TimedOutExc()
 
+class Manual_Player():
+	def __init__(self):
+		pass
+
+	def move(self, board, old_move, flag):
+		#You have to implement the move function with the same signature as this
+		#Find the list of valid cells allowed
+		cells = board.find_valid_move_cells(old_move)
+		return cells[random.randrange(len(cells))]
+
 class Random_Player():
 	def __init__(self):
 		pass
@@ -81,48 +91,11 @@ class Random_Player():
 		else:
 			return sum_max
 
-<<<<<<< HEAD
-	def utilityi(self, node, curr_move, flag):
-		return random.randint(-7,7)
-	
-=======
-
-	def move(self, board, old_move, flag):
-		#You have to implement the move function with the same signature as this
-		#Find the list of valid cells allowed
-		x1 = 0
-		y1 = 0
-		if old_move == (-1 , -1):
-			x1 = random.randint(0,15)
-			y1 = random.randint(0,15)
-		#cells = board.find_valid_move_cells(old_move)
-		elif board.block_status[old_move[0]][old_move[1]] !='-' :
-			x1 = random.randint(0,15)
-			y1 = random.randint(0,15)
-		else:
-			ans = minmax(board, 5, True, -sys.maxint+1, sys.maxint, flag)
-			x1 = ans[1];
-			y1 = ans[2];
-		print x1 , y1
-		return (x1,y1)
->>>>>>> bdbb63b5407de8bbde78b64c88e75572f1033874
-
 	def toggleFlag(self,flag):
 		if flag == 'x':
 			return 'o'
 		else:
 			return 'x'
-
-<<<<<<< HEAD
-	def findBestMove(self , node , depth , isMax , alpha , beta , flag , old_move):
-		x1 = 0
-		y1 = 0
-		bestVal = -sys.maxint+1
-		for i in xrange(16):
-			if node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] == '-':
-				node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = flag
-				flag = self.toggleFlag(flag)
-				ans = self.minmax(node, depth-1, False, alpha, beta, flag , [4*(old_move[0]%4) +(i/4) , 4*(old_move[1]%4)+(i%4)] )
 
 	def minmax(self ,node, depth, isMax, alpha, beta, flag , old_move , val):
 		#print "stdp123"
@@ -131,87 +104,71 @@ class Random_Player():
 			return [val , old_move[0] , old_move[1]]
 
 		elif isMax:
-
 			bestVal = -sys.maxint+1
-			for i in xrange(16):
-				if node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] == '-':
-					node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = flag
-					flag = self.toggleFlag(flag)
-					ans = self.minmax(node, depth-1, False, alpha, beta, flag , [4*(old_move[0]%4) +(i/4) , 4*(old_move[1]%4)+(i%4)]  , val)
-					node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = '-'
-					bestVal = max(bestVal , ans)
-					if bestVal > alpha:
-						alpha = bestVal
-						val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = alpha
-					if beta <= alpha:
-						break
-			return bestVal
+			if node.block_status[old_move[0]/4][old_move[1]/4] == '-':
+				for i in xrange(16):
+					if node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] == '-':
+						node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = flag
+						flag = self.toggleFlag(flag)
+						ans = self.minmax(node, depth-1, False, alpha, beta, flag , [4*(old_move[0]%4) +(i/4) , 4*(old_move[1]%4)+(i%4)]  , val)
+						node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = '-'
+						bestVal = max(bestVal , ans)
+						if bestVal > alpha:
+							alpha = bestVal
+							val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = alpha
+						if beta <= alpha:
+							break
+				return bestVal
+			else:
+				for i in xrange(256):
+					if node.block_status[(i/16)/4][(i%16)/4] == '-' and node.board_status[(i/16)][(i%16)] == '-':
+						node.board_status[(i/16)][(i%16)] = flag
+						flag = self.toggleFlag(flag)
+						ans = self.minmax(node, depth-1, False, alpha, beta, flag , [(i/16) , (i%16)]  , val)
+						node.board_status[(i/16)][(i%16)] = '-'
+						bestVal = max(bestVal , ans)
+						if bestVal > alpha:
+							alpha = bestVal
+							val[(i/16)][i%16] = alpha
+						if beta <= alpha:
+							break
+				return bestVal
+
+				
 		
 		else :
 			bestVal = sys.maxint
-			for i in xrange(16):
-	        		if node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] == '-':
- 		    			node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)]=flag
-	    	 			flag = self.toggleFlag(flag)
-	       		    		ans = self.minmax(node, depth-1, True, alpha, beta, flag , [4*(old_move[0]%4) +(i/4) , 4*(old_move[1]%4)+(i%4)] , val)
-					node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = '-'
-					bestVal = min(bestVal  , ans)
-					beta = min(beta , bestVal)
-					if bestVal < beta:
-						beta = bestVal
-						val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = beta
-					if beta <= alpha:
-	            				break
-		        return bestVal
-=======
-	def minmax(self, node, depth, isMax, alpha, beta, flag , old_move):
-		if depth == 0:
-			val =  utility(node , old_move , flag)
-			return {val , old_move[0] , old_move[1]}
+			if node.block_status[old_move[0]%4][old_move[1]%4] == '-':
+				for i in xrange(16):
+		        		if node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] == '-':
+	 		    			node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)]=flag
+		    	 			flag = self.toggleFlag(flag)
+		       		    		ans = self.minmax(node, depth-1, True, alpha, beta, flag , [4*(old_move[0]%4) +(i/4) , 4*(old_move[1]%4)+(i%4)] , val)
+						node.board_status[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = '-'
+						bestVal = min(bestVal  , ans)
+						beta = min(beta , bestVal)
+						if bestVal < beta:
+							beta = bestVal
+							val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] = beta
+						if beta <= alpha:
+		            				break
+			        return bestVal
 
-		elif isMax:
-			bestVal = -sys.maxint+1
-			ans[0]=bestVal;
-			ans[1]=old_move[0];
-			ans[2]=old_move[1];
-			for i in xrange(16):
-				if node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] == '-':
-					node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)]=flag
-					flag = toggleFlag(flag)
-					ans = minmax(node, depth-1, False, alpha, beta, flag , {4*old_move[0] +(i/4) , 4*old_move[1]+(i%4)} )
-
-					node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] = '-'
-					if ans[0] > bestVal:
-						bestVal = ans[0]
-						ans[1] = 4*old_move[0] +(i/4)
-						ans[2] = 4*old_move[1] +(i%4)
-					alpha = max(alpha, bestVal)
-					print ans[1] , ans[2]
-					if beta <= alpha:
-						break
-			return ans
-		
-		else :
-			bestVal = sys.maxint
-			ans[0]=bestVal;
-			ans[1]=old_move[0];
-			ans[2]=old_move[1];
-			for i in xrange(16):
-    	    			if node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] == '-':
-    	    				node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)]=flag
-    	    				flag = toggleFlag(flag)
-	        	    		value = minimax(node, depth-1, True, alpha, beta, flag , {4*old_move[0] +(i/4) , 4*old_move[1]+(i%4)})
-					node[4*old_move[0] +(i/4)][4*old_move[1]+(i%4)] = '-'
-					if ans[0] < bestVal :
-						bestVal = ans[0]
-						ans[1] = 4*old_move[0] +(i/4)
-						ans[2] = 4*old_move[1] +(i%4)
-					print ans[1] ,ans[2]
-					if beta <= alpha:
-		            			break
-	        	return ans
->>>>>>> bdbb63b5407de8bbde78b64c88e75572f1033874
-
+			else:
+				for i in xrange(256):
+		        		if node.block_status[(i/16)/4][(i%16)/4] == '-' and node.board_status[(i/16)][(i%16)] == '-':
+						node.board_status[(i/16)][(i%16)] = flag
+		    	 			flag = self.toggleFlag(flag)
+		       		    		ans = self.minmax(node, depth-1, True, alpha, beta, flag , [(i/16) ,(i%16)] , val)
+						node.board_status[(i/16)][(i%16)] = '-'
+						bestVal = min(bestVal  , ans)
+						beta = min(beta , bestVal)
+						if bestVal < beta:
+							beta = bestVal
+							val[(i/16)][(i%16)] = beta
+						if beta <= alpha:
+		            				break
+			        return bestVal
 	def move(self, board, old_move, flag):
 		#You have to implement the move function with the same signature as this
 		#Find the list of valid cells allowed
@@ -225,23 +182,25 @@ class Random_Player():
 			x1 = random.randint(0,15)
 			y1 = random.randint(0,15)
 		#cells = board.find_valid_move_cells(old_move)
-		elif board.block_status[old_move[0]/4][old_move[1]/4] !='-' :
-		#	print "moi"
-			x1 = random.randint(0,15)
-			y1 = random.randint(0,15)
 		else:
-		#	print "moins"
 			ans = self.minmax(board, 5, True, -sys.maxint+1, sys.maxint, flag , old_move , val)
 			bestVal = -sys.maxint+1
-			for i in xrange(16):
-				if val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] > bestVal:
-					bestVal = val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)]
-					x1 = 4*(old_move[0]%4) +(i/4)
-					y1 = 4*(old_move[1]%4) +(i%4)
+			if board.block_status[old_move[0]%4][old_move[1]%4] == '-':
+				for i in xrange(16):
+					if val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)] > bestVal:
+						bestVal = val[4*(old_move[0]%4) +(i/4)][4*(old_move[1]%4)+(i%4)]
+						x1 = 4*(old_move[0]%4) +(i/4)
+						y1 = 4*(old_move[1]%4) +(i%4)
+			else :
+				for i in xrange(256):
+					if board.block_status[(i/16)/4][(i%16)/4]=='-' and val[(i/16)][(i%16)] > bestVal:
+						bestVal = val[(i/16)][(i%16)]
+						x1 = i/16
+						y1 = i%16
 		print x1 , y1
 		return (x1,y1)
 
-class Manual_Player:
+class Manual_Player1:
 	def __init__(self):
 		pass
 	def move(self, board, old_move, flag):
@@ -392,7 +351,7 @@ def gameplay(obj1, obj2):				#game simulator
 	old_move = (-1,-1)
 	WINNER = ''
 	MESSAGE = ''
-	TIME = 60
+	TIME = 15
 	pts1 = 0
 	pts2 = 0
 
